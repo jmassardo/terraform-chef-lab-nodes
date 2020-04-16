@@ -1,0 +1,8 @@
+.terraform/*
+.terraform.tfstate.lock.info
+terraform.tfstate
+terraform.tfstate.backup
+.DS_Store
+terraform.tfvars
+audit_user.toml
+infra_user.toml
