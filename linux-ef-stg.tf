@@ -68,8 +68,22 @@ resource "azurerm_virtual_machine" "linux-ef-stg" {
     password = "${var.password}"
   }
 
-  # Add remote_exec provisioner to install hab
+  provisioner "file" {
+    source      = "files/audit_user.toml"
+    destination = "/hab/user/${var.audit_pkg_name}/config/user.toml"
+  }
 
+  provisioner "file" {
+    source      = "files/infra_user.toml"
+    destination = "/hab/user/${var.infra_pkg_name}/config/user.toml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "hab svc load ${var.hab_origin}/${var.audit_pkg_name} --channel stage --strategy at-once",
+      "hab svc load ${var.hab_origin}/${var.infra_pkg_name} --channel stage --strategy at-once",
+    ]
+  }
 }
 
 output "linux-ef-stg-fqdn" {
