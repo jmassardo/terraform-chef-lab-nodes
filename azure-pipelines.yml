@@ -26,20 +26,28 @@ stages:
         echo audit_pkg_name = \"$(audit-pkg-name)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
-    - script: |
-        export ARM_CLIENT_ID="$(azure-client-id)"
-        export ARM_CLIENT_SECRET="$(azure-client-secret)"
-        export ARM_SUBSCRIPTION_ID="$(azure-subscription-id)"
-        export ARM_TENANT_ID="$(azure-tenant-id)"
-      displayName: 'Export creds'
+    # - script: |
+    #     export ARM_CLIENT_ID="$(azure-client-id)"
+    #     export ARM_CLIENT_SECRET="$(azure-client-secret)"
+    #     export ARM_SUBSCRIPTION_ID="$(azure-subscription-id)"
+    #     export ARM_TENANT_ID="$(azure-tenant-id)"
+    #   displayName: 'Export creds'
     - script: 'terraform init'
       displayName: 'Initialize Terraform modules'
     - script: 'terraform validate'
       displayName: 'Validate Terraform modules'
-    - script: 'terraform plan'
-      displayName: 'What are we building?'
-    - script: 'terraform apply --auto-approve'
-      displayName: 'Build infrastructure'
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'CS_Key_Vault'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'terraform plan'
+        addSpnToEnvironment: true
+        useGlobalConfig: true
+    # - script: 'terraform plan'
+    #   displayName: 'What are we building?'
+    # - script: 'terraform apply --auto-approve'
+    #   displayName: 'Build infrastructure'
     # - task: TerraformCLI@0
     #   inputs:
     #     command: 'init'
