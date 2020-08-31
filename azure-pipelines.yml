@@ -30,44 +30,9 @@ stages:
         echo TENANT_ID = \"$(azure-tenant-id)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
-    # - script: |
-    #     export TF_VAR_CLIENT_ID="$(azure-client-id)"
-    #     export TF_VAR_CLIENT_SECRET="$(azure-client-secret)"
-    #     export TF_VAR_SUBSCRIPTION_ID="$(azure-subscription-id)"
-    #     export TF_VAR_TENANT_ID="$(azure-tenant-id)"
-    #   displayName: 'Export creds'
     - script: 'terraform init'
       displayName: 'Initialize Terraform modules'
     - script: 'terraform validate'
       displayName: 'Validate Terraform modules'
-    # - task: AzureCLI@2
-    #   inputs:
-    #     azureSubscription: 'CS_Key_Vault'
-    #     scriptType: 'bash'
-    #     scriptLocation: 'inlineScript'
-    #     inlineScript: 'terraform plan'
-    #     addSpnToEnvironment: true
-    #     useGlobalConfig: true
-    - script: 'terraform plan'
-      displayName: 'What are we building?'
-    # - script: 'terraform apply --auto-approve'
-    #   displayName: 'Build infrastructure'
-    # - task: TerraformCLI@0
-    #   inputs:
-    #     command: 'init'
-    #     backendType: 'azurerm'
-    #     backendServiceArm: 'CS_Key_Vault'
-    #     backendAzureRmResourceGroupName: 'jrm-cloudshell'
-    #     backendAzureRmStorageAccountName: 'jrmcloudshellstorage'
-    #     backendAzureRmContainerName: 'terraform'
-    #     backendAzureRmKey: 'terraform.tfstate'
-    #   displayName: 'Initialize Terraform backend'
-    # - task: TerraformCLI@0
-    #   inputs:
-    #     command: 'validate'
-    #   displayName: 'Validate Terraform modules'
-    # - task: TerraformCLI@0
-    #   inputs:
-    #     command: 'apply'
-    #     environmentServiceName: 'CS_Key_Vault'
-    #   displayName: 'Build infrastructure'
+    - script: 'terraform apply --auto-approve'
+      displayName: 'Build infrastructure'
