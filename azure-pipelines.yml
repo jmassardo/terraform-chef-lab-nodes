@@ -26,35 +26,34 @@ stages:
         echo audit_pkg_name = \"$(audit-pkg-name)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
-    # - script: |
-    #     mkdir ~/.azure
-    #     echo \[$(azure-subscription-id)\] >> ~/.azure/credentials
-    #     echo client_id = \"$(azure-client-id)\" >> ~/.azure/credentials
-    #     echo client_secret = \"$(azure-client-secret)\" >> ~/.azure/credentials
-    #     echo tenant_id = \"$(azure-tenant-id)\" >> ~/.azure/credentials
-    #   displayName: 'Build azure creds file'
-    # - script: 'terraform init'
-    #   displayName: 'Initialize Terraform modules'
-    # - script: 'terraform validate'
-    #   displayName: 'Validate Terraform modules'
-    # - script: 'terraform apply --auto-approve'
-    #   displayName: 'Build infrastructure'
-    - task: TerraformCLI@0
-      inputs:
-        command: 'init'
-        backendType: 'azurerm'
-        backendServiceArm: 'CS_Key_Vault'
-        backendAzureRmResourceGroupName: 'jrm-cloudshell'
-        backendAzureRmStorageAccountName: 'jrmcloudshellstorage'
-        backendAzureRmContainerName: 'terraform'
-        backendAzureRmKey: 'terraform.tfstate'
-      displayName: 'Initialize Terraform backend'
-    - task: TerraformCLI@0
-      inputs:
-        command: 'validate'
+    - script: |
+        export ARM_CLIENT_ID="$(azure-client-id)"
+        export ARM_CLIENT_SECRET="$(azure-client-secret)"
+        export ARM_SUBSCRIPTION_ID="$(azure-subscription-id)"
+        export ARM_TENANT_ID="$(azure-tenant-id)"
+      displayName: 'Export creds'
+    - script: 'terraform init'
+      displayName: 'Initialize Terraform modules'
+    - script: 'terraform validate'
       displayName: 'Validate Terraform modules'
-    - task: TerraformCLI@0
-      inputs:
-        command: 'apply'
-        environmentServiceName: 'CS_Key_Vault'
+    - script: 'terraform apply --auto-approve'
       displayName: 'Build infrastructure'
+    # - task: TerraformCLI@0
+    #   inputs:
+    #     command: 'init'
+    #     backendType: 'azurerm'
+    #     backendServiceArm: 'CS_Key_Vault'
+    #     backendAzureRmResourceGroupName: 'jrm-cloudshell'
+    #     backendAzureRmStorageAccountName: 'jrmcloudshellstorage'
+    #     backendAzureRmContainerName: 'terraform'
+    #     backendAzureRmKey: 'terraform.tfstate'
+    #   displayName: 'Initialize Terraform backend'
+    # - task: TerraformCLI@0
+    #   inputs:
+    #     command: 'validate'
+    #   displayName: 'Validate Terraform modules'
+    # - task: TerraformCLI@0
+    #   inputs:
+    #     command: 'apply'
+    #     environmentServiceName: 'CS_Key_Vault'
+    #   displayName: 'Build infrastructure'
