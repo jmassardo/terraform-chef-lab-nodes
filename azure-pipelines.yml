@@ -26,10 +26,10 @@ stages:
         echo audit_pkg_name = \"$(audit-pkg-name)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
-    - task: TerraformTaskV1@0
-      inputs:
-        provider: 'azurerm'
-        command: 'validate'
+    # - task: TerraformTaskV1@0
+    #   inputs:
+    #     provider: 'azurerm'
+    #     command: 'validate'
     - task: TerraformTaskV1@0
       inputs:
         provider: 'azurerm'
