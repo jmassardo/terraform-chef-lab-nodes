@@ -48,3 +48,10 @@ stages:
         backendAzureRmStorageAccountName: 'jrmcloudshellstorage'
         backendAzureRmContainerName: 'terraform'
         backendAzureRmKey: 'terraform.tfstate'
+    - task: TerraformCLI@0
+      inputs:
+        command: 'validate'
+    - task: TerraformCLI@0
+      inputs:
+        command: 'plan'
+        environmentServiceName: 'CS_Key_Vault'
