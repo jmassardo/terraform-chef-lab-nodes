@@ -8,6 +8,8 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+    - script: terraform init
+      displayName: 'Init Terraform'
     - script: terraform validate
       displayName: 'Validate Terraform code'
     - script: terraform apply --auto-approve
