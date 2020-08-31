@@ -26,11 +26,21 @@ stages:
         echo audit_pkg_name = \"$(audit-pkg-name)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
-    - script: terraform init
-      displayName: 'Init Terraform'
-    - script: terraform validate
-    - task: TerraformCLI@0
+    - task: TerraformTaskV1@0
       inputs:
+        provider: 'azurerm'
+        command: 'validate'
+    - task: TerraformTaskV1@0
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: 'CS_Key_Vault'
+        backendAzureRmResourceGroupName: 'jrm-cloudshell'
+        backendAzureRmStorageAccountName: 'jrmcloudshellstorage'
+        backendAzureRmContainerName: 'terraform'
+        backendAzureRmKey: 'terraform.tfstate'
+    - task: TerraformTaskV1@0
+      inputs:
+        provider: 'azurerm'
         command: 'apply'
-        environmentServiceName: 'CS_Key_Vault'
-        commandOptions: '--auto-approve'
+        environmentServiceNameAzureRM: 'CS_Key_Vault'
