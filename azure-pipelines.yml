@@ -24,10 +24,10 @@ stages:
         echo hab_origin = \"$(hab-origin)\" >> terraform.tfvars
         echo infra_pkg_name = \"$(infra-pkg-name)\" >> terraform.tfvars
         echo audit_pkg_name = \"$(audit-pkg-name)\" >> terraform.tfvars
-        echo CLIENT_ID = \"$(azure-client-id\" >> terraform.tfvars
-        echo CLIENT_SECRET = \"$(azure-client-secret\" >> terraform.tfvars
-        echo SUBSCRIPTION_ID = \"$(azure-subscription-id\" >> terraform.tfvars
-        echo TENANT_ID = \"$(azure-tenant-id\" >> terraform.tfvars
+        echo CLIENT_ID = \"$(azure-client-id)\" >> terraform.tfvars
+        echo CLIENT_SECRET = \"$(azure-client-secret)\" >> terraform.tfvars
+        echo SUBSCRIPTION_ID = \"$(azure-subscription-id)\" >> terraform.tfvars
+        echo TENANT_ID = \"$(azure-tenant-id)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
     # - script: |
