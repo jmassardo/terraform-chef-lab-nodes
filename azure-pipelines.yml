@@ -36,6 +36,8 @@ stages:
       displayName: 'Initialize Terraform modules'
     - script: 'terraform validate'
       displayName: 'Validate Terraform modules'
+    - script: 'terraform plan'
+      displayName: 'What are we building?'
     - script: 'terraform apply --auto-approve'
       displayName: 'Build infrastructure'
     # - task: TerraformCLI@0
