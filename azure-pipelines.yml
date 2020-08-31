@@ -16,14 +16,14 @@ stages:
     - script: |
         echo license_accept = \"accept\" >> terraform.tfvars
         echo policy_name = \"$(policy-name)\" >> terraform.tfvars
-        echo chef_server_url = \"$(chef-server-url)" >> terraform.tfvars
-        echo chef_user_name = \"admin" >> terraform.tfvars
-        echo chef_user_key = \"admin.pem" >> terraform.tfvars
-        echo chef_client_version = \"$(chef-client-version)" >> terraform.tfvars
-        echo run_list = \"$(run-list)" >> terraform.tfvars
-        echo hab_origin = \"$(hab-origin)" >> terraform.tfvars
-        echo infra_pkg_name = \"$(infra-pkg-name)" >> terraform.tfvars
-        echo audit_pkg_name = \"$(audit-pkg-name)" >> terraform.tfvars
+        echo chef_server_url = \"$(chef-server-url)\" >> terraform.tfvars
+        echo chef_user_name = \"admin\" >> terraform.tfvars
+        echo chef_user_key = \"admin.pem\" >> terraform.tfvars
+        echo chef_client_version = \"$(chef-client-version)\" >> terraform.tfvars
+        echo run_list = \"$(run-list)\" >> terraform.tfvars
+        echo hab_origin = \"$(hab-origin)\" >> terraform.tfvars
+        echo infra_pkg_name = \"$(infra-pkg-name)\" >> terraform.tfvars
+        echo audit_pkg_name = \"$(audit-pkg-name)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
     - script: terraform init
