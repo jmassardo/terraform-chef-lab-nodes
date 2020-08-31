@@ -1,41 +1,40 @@
 #create a public IP address for the virtual machine
 resource "azurerm_public_ip" "win-ef-prod-pubip" {
-  name                         = "win-ef-prod-pubip"
-  location                     = "${var.azure_region}"
-  resource_group_name          = "${azurerm_resource_group.rg.name}"
-  allocation_method            = "Dynamic"
-  domain_name_label            = "win-ef-prod-${lower(substr("${join("", split(":", timestamp()))}", 8, -1))}"
+  name                = "win-ef-prod-pubip"
+  location            = var.azure_region
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Dynamic"
+  domain_name_label   = "win-ef-prod-${lower(substr(join("", split(":", timestamp())), 8, -1))}"
 
-  tags {
-    environment = "${var.azure_env}"
+  tags = {
+    environment = var.azure_env
   }
 }
 
 #create the network interface and put it on the proper vlan/subnet
 resource "azurerm_network_interface" "win-ef-prod-ip" {
   name                = "win-ef-prod-ip"
-  location            = "${var.azure_region}"
-  resource_group_name = "${azurerm_resource_group.rg.name}"
-
+  location            = var.azure_region
+  resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
-    name      = "win-ef-prod-ipconf"
-    subnet_id = "${azurerm_subnet.subnet.id}"
+    name                          = "win-ef-prod-ipconf"
+    subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "dynamic"
-    public_ip_address_id          = "${azurerm_public_ip.win-ef-prod-pubip.id}"
+    public_ip_address_id          = azurerm_public_ip.win-ef-prod-pubip.id
   }
 }
 
 #create the actual VM
 resource "azurerm_virtual_machine" "win-ef-prod" {
   name                  = "win-ef-prod"
-  location              = "${var.azure_region}"
-  resource_group_name   = "${azurerm_resource_group.rg.name}"
-  network_interface_ids = ["${azurerm_network_interface.win-ef-prod-ip.id}"]
-  vm_size               = "${var.vm_size}"
+  location              = var.azure_region
+  resource_group_name   = azurerm_resource_group.rg.name
+  network_interface_ids = [azurerm_network_interface.win-ef-prod-ip.id]
+  vm_size               = var.vm_size
 
   storage_os_disk {
-    name            = "win-ef-prod-osdisk"
+    name              = "win-ef-prod-osdisk"
     managed_disk_type = "Standard_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
@@ -49,9 +48,9 @@ resource "azurerm_virtual_machine" "win-ef-prod" {
 
   os_profile {
     computer_name  = "win-ef-prod"
-    admin_username = "${var.username}"
-    admin_password = "${var.password}"
-    custom_data    = "${file("./files/winrm.ps1")}"
+    admin_username = var.username
+    admin_password = var.password
+    custom_data    = file("./files/winrm.ps1")
   }
 
   os_profile_windows_config {
@@ -59,6 +58,7 @@ resource "azurerm_virtual_machine" "win-ef-prod" {
     winrm {
       protocol = "http"
     }
+
     # Auto-Login's required to configure WinRM
     additional_unattend_config {
       pass         = "oobeSystem"
@@ -72,22 +72,22 @@ resource "azurerm_virtual_machine" "win-ef-prod" {
       pass         = "oobeSystem"
       component    = "Microsoft-Windows-Shell-Setup"
       setting_name = "FirstLogonCommands"
-      content      = "${file("./files/FirstLogonCommands.xml")}"
+      content      = file("./files/FirstLogonCommands.xml")
     }
   }
 
-  tags {
-    environment = "${var.azure_env}"
+  tags = {
+    environment = var.azure_env
   }
 
   connection {
-    host     = "${azurerm_public_ip.win-ef-prod-pubip.fqdn}"
+    host     = azurerm_public_ip.win-ef-prod-pubip.fqdn
     type     = "winrm"
     port     = 5985
     https    = false
     timeout  = "60m"
-    user     = "${var.username}"
-    password = "${var.password}"
+    user     = var.username
+    password = var.password
   }
 
   provisioner "file" {
@@ -120,5 +120,6 @@ resource "azurerm_virtual_machine" "win-ef-prod" {
 }
 
 output "win-ef-prod-fqdn" {
-  value = "${azurerm_public_ip.win-ef-prod-pubip.fqdn}"
+  value = azurerm_public_ip.win-ef-prod-pubip.fqdn
 }
+
