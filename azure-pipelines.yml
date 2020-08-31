@@ -26,21 +26,15 @@ stages:
         echo audit_pkg_name = \"$(audit-pkg-name)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
-    # - task: TerraformTaskV1@0
-    #   inputs:
-    #     provider: 'azurerm'
-    #     command: 'validate'
-    - task: TerraformTaskV1@0
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        backendServiceArm: 'CS_Key_Vault'
-        backendAzureRmResourceGroupName: 'jrm-cloudshell'
-        backendAzureRmStorageAccountName: 'jrmcloudshellstorage'
-        backendAzureRmContainerName: 'terraform'
-        backendAzureRmKey: 'terraform.tfstate'
-    - task: TerraformTaskV1@0
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        environmentServiceNameAzureRM: 'CS_Key_Vault'
+    - script: |
+        echo \[$(azure-subscription-id)\] >> ~/.azure/credentials
+        echo client_id = \"$(azure-client-id)\" >> ~/.azure/credentials
+        echo client_secret = \"$(azure-client-secret)\" >> ~/.azure/credentials
+        echo tenant_id = \"$(azure-tenant-id)\" >> ~/.azure/credentials
+      displayName: 'Build azure creds file'
+    - script: 'terraform validate'
+      displayName: 'Validate Terraform modules'
+    - script: 'terraform init'
+      displayName: 'Initialize Terraform modules'
+    - script: 'terraform apply --auto-approve'
+      displayName: 'Build infrastructure'
