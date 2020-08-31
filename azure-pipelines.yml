@@ -29,8 +29,14 @@ stages:
     - script: terraform init
       displayName: 'Init Terraform'
     - script: terraform validate
-      displayName: 'Validate Terraform code'
-    - script: terraform apply --auto-approve
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'CS_Key_Vault'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'terraform apply --auto-approve'
+        addSpnToEnvironment: true
+        failOnStandardError: true
       displayName: 'Apply Terraform code'
 # - stage: DestroyNodes
 #   jobs:
