@@ -14,6 +14,11 @@ variable "azure_rg_name" {
   description = "Specify the name of the new resource group"
 }
 
+variable "CLIENT_ID" {}
+variable "CLIENT_SECRET" {}
+variable "SUBSCRIPTION_ID" {}
+variable "TENANT_ID" {}
+
 # Shared Options
 
 variable "username" {
