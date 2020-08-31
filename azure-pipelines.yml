@@ -33,9 +33,9 @@ stages:
         echo client_secret = \"$(azure-client-secret)\" >> ~/.azure/credentials
         echo tenant_id = \"$(azure-tenant-id)\" >> ~/.azure/credentials
       displayName: 'Build azure creds file'
-    - script: 'terraform validate'
-      displayName: 'Validate Terraform modules'
     - script: 'terraform init'
       displayName: 'Initialize Terraform modules'
+    - script: 'terraform validate'
+      displayName: 'Validate Terraform modules'
     - script: 'terraform apply --auto-approve'
       displayName: 'Build infrastructure'
