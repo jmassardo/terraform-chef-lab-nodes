@@ -1,36 +1,37 @@
 # Setup the infrastructure components required to create the environment
 provider "azurerm" {
-  features {}
+  features {
+  }
 }
 
 # Create a resource group to contain all the objects
 resource "azurerm_resource_group" "rg" {
   name     = "${var.azure_rg_name}-${join("", split(":", timestamp()))}" #Removing the colons since Azure doesn't allow them.
-  location = "${var.azure_region}"
+  location = var.azure_region
 }
 
 # Create the virtual network
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.azure_rg_name}_Network"
   address_space       = ["10.1.0.0/16"]
-  location            = "${var.azure_region}"
-  resource_group_name = "${azurerm_resource_group.rg.name}"
+  location            = var.azure_region
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
 # Create the individual subnet for the servers
 resource "azurerm_subnet" "subnet" {
   name                 = "${var.azure_rg_name}_Subnet"
-  resource_group_name  = "${azurerm_resource_group.rg.name}"
-  virtual_network_name = "${azurerm_virtual_network.vnet.name}"
-  address_prefix       = "10.1.1.0/24"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes       = ["10.1.1.0/24"]
 }
 
 # create the network security group to allow inbound access to the servers
 resource "azurerm_network_security_group" "nsg" {
   name                = "${var.azure_rg_name}_nsg"
-  location            = "${var.azure_region}"
-  resource_group_name = "${azurerm_resource_group.rg.name}"
-  
+  location            = var.azure_region
+  resource_group_name = azurerm_resource_group.rg.name
+
   # create a rule to allow RDP inbound to all nodes in the network
   security_rule {
     name                       = "Allow_RDP"
@@ -69,14 +70,15 @@ resource "azurerm_network_security_group" "nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-  
+
   # add an environment tag.
-  tags {
-    environment = "${var.azure_env}"
+  tags = {
+    environment = var.azure_env
   }
 }
 
 resource "azurerm_subnet_network_security_group_association" "sg_assoc" {
-  subnet_id                 = "${azurerm_subnet.subnet.id}"
-  network_security_group_id = "${azurerm_network_security_group.nsg.id}"
+  subnet_id                 = azurerm_subnet.subnet.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
 }
+
