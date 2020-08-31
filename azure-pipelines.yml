@@ -1,0 +1,22 @@
+trigger:
+- master
+
+stages:
+- stage: BuildNodes
+  jobs:
+  - job: Apply
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: terraform validate
+      displayName: 'Validate Terraform code'
+    - script: terraform apply --auto-approve
+      displayName: 'Apply Terraform code'
+- stage: DestroyNodes
+  jobs:
+  - job: Destroy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: terraform destroy --auto-approve
+      displayName: 'Destroy Terraform code'
