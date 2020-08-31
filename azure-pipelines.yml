@@ -27,6 +27,7 @@ stages:
         echo $(admin-pem) | base64 -d > admin.pem
       displayName: 'Build tfvars file'
     - script: |
+        mkdir ~/.azure
         echo \[$(azure-subscription-id)\] >> ~/.azure/credentials
         echo client_id = \"$(azure-client-id)\" >> ~/.azure/credentials
         echo client_secret = \"$(azure-client-secret)\" >> ~/.azure/credentials
