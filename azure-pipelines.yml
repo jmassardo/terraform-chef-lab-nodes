@@ -38,7 +38,7 @@ stages:
         echo enable = true >> ./files/audit_user.toml
         echo server_url = \'$(AUTOMATE-SERVER-NAME)/data-collector/v0/\' >> ./files/audit_user.toml
         echo token = \'$(api-token)\' >> ./files/audit_user.toml
-        user = 'admin' >> ./files/audit_user.toml
+        echo user = \'admin\' >> ./files/audit_user.toml
       displayName: 'Build user.toml for effortless audit'
     - script: |
         echo \[chef_license\] >> ./files/infra_user.toml
