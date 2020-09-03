@@ -29,7 +29,6 @@ stages:
         echo SUBSCRIPTION_ID = \"$(azure-subscription-id)\" >> terraform.tfvars
         echo TENANT_ID = \"$(azure-tenant-id)\" >> terraform.tfvars
         echo $(admin-pem) | base64 -d > admin.pem
-        cat admin.pem
       displayName: 'Build tfvars file'
     - script: |
         echo \[chef_license\] >> ./files/audit_user.toml
@@ -40,7 +39,6 @@ stages:
         echo server_url = \'$(AUTOMATE-SERVER-NAME)/data-collector/v0/\' >> ./files/audit_user.toml
         echo token = \'$(api-token)\' >> ./files/audit_user.toml
         echo user = \'admin\' >> ./files/audit_user.toml
-        cat ./files/audit_user.toml
       displayName: 'Build user.toml for effortless audit'
     - script: |
         echo \[chef_license\] >> ./files/infra_user.toml
@@ -50,11 +48,10 @@ stages:
         echo enable = true >> ./files/infra_user.toml
         echo server_url = \'$(AUTOMATE-SERVER-NAME)/data-collector/v0/\' >> ./files/infra_user.toml
         echo token = \'$(api-token)\' >> ./files/infra_user.toml
-        cat ./files/infra_user.toml
       displayName: 'Build user.toml for effortless infra'
     - script: 'terraform init'
       displayName: 'Initialize Terraform modules'
     - script: 'terraform validate'
       displayName: 'Validate Terraform modules'
-    # - script: 'terraform apply --auto-approve'
-    #   displayName: 'Build infrastructure'
+    - script: 'terraform apply --auto-approve'
+      displayName: 'Build infrastructure'
