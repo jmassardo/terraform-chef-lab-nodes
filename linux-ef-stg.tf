@@ -72,29 +72,32 @@ resource "azurerm_virtual_machine" "linux-ef-stg" {
     destination = "/tmp/Install-Habitat.sh"
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo chmod +x /tmp/Install-Habitat.sh",
-      "sudo /tmp/Install-Habitat.sh",
-      "sudo mkdir -P /hab/user/${var.audit_pkg_name}/config/",
-      "sudo mkdir -P /hab/user/${var.infra_pkg_name}/config/",
-    ]
-  }
-
   provisioner "file" {
     source      = "files/audit_user.toml"
-    destination = "/hab/user/${var.audit_pkg_name}/config/user.toml"
+    destination = "/tmp/audit_user.toml"
   }
 
   provisioner "file" {
     source      = "files/infra_user.toml"
-    destination = "/hab/user/${var.infra_pkg_name}/config/user.toml"
+    destination = "/tmp/infra_user.toml"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "hab svc load ${var.hab_origin}/${var.audit_pkg_name} --channel stage --strategy at-once",
-      "hab svc load ${var.hab_origin}/${var.infra_pkg_name} --channel stage --strategy at-once",
+      "sudo chmod +x /tmp/Install-Habitat.sh",
+      "sudo /tmp/Install-Habitat.sh",
+      "sudo mkdir -p /hab/user/${var.audit_pkg_name}/config/",
+      "sudo mkdir -p /hab/user/${var.infra_pkg_name}/config/",
+      "sudo mv /tmp/audit_user.toml /hab/user/${var.audit_pkg_name}/config/user.toml",
+      "sudo mv /tmp/infra_user.toml /hab/user/${var.infra_pkg_name}/config/user.toml",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "export HAB_NONINTERACTIVE=true",
+      "sudo hab svc load ${var.hab_origin}/${var.audit_pkg_name} --channel stage --strategy at-once",
+      "sudo hab svc load ${var.hab_origin}/${var.infra_pkg_name} --channel stage --strategy at-once",
     ]
   }
 }
