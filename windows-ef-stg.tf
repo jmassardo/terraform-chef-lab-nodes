@@ -97,6 +97,7 @@ resource "azurerm_virtual_machine" "win-ef-stg" {
 
   provisioner "remote-exec" {
     inline = [
+      "set HAB_NONINTERACTIVE=true",
       "PowerShell.exe -ExecutionPolicy Bypass c:/terraform/Install-Habitat.ps1",
     ]
   }
@@ -113,6 +114,7 @@ resource "azurerm_virtual_machine" "win-ef-stg" {
 
   provisioner "remote-exec" {
     inline = [
+      "set HAB_NONINTERACTIVE=true",
       "hab svc load ${var.hab_origin}/${var.audit_pkg_name} --channel stage --strategy at-once",
       "hab svc load ${var.hab_origin}/${var.infra_pkg_name} --channel stage --strategy at-once",
     ]
